@@ -1,11 +1,12 @@
-import logging; logging.basicConfig(level=logging.INFO)
-
+import logging
 import asyncio
 import os
 import json
 import time
 from datetime import datetime
 from aiohttp import web
+
+logging.basicConfig(level=logging.INFO)
 
 def index(request):
 	return web.Response(body=b'<h1>Awesome</h1>')
