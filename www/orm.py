@@ -98,4 +98,51 @@ class TextField(Field):
 	def __init__(self, name=None, default=None):
 		super().__init__(name, 'text', False, default)
 
+class ModelMetaclass(type):
+
+	# __new__ 是在__init__之前被调用的特殊方法
+    # __new__是用来创建对象并返回之的方法
+    # 而__init__只是用来将传入的参数初始化给对象
+    # 你很少用到__new__，除非你希望能够控制对象的创建
+    # 这里，创建的对象是类，我们希望能够自定义它，所以我们这里改写__new__
+    # 如果你希望的话，你也可以在__init__中做些事情
+    # 还有一些高级的用法会涉及到改写__call__特殊方法，但是我们这里不用
+	def __new__(self, name, bases, attrs):
+		if name == 'Model':
+			return type.__new__(cls, name, bases, attrs)
+		tableName = attrs.get('__table__', None) or name
+		logging.info('found model: %s (table: %s)' % (name, tableName))
+		mappings = dict()
+		fields = []
+		primaryKey = None
+		for k, v in attrs.items():
+			if isinstance(v, Field):
+				logging.info('  found mapping: %s ==> %s' % (k, v))
+				mappings[k] = v
+				if v.primary_key:
+					# 找到主键
+					if primaryKey:
+						raise StandardError('Duplicate primary key for field: %s' % k)
+					primaryKey = k
+				else:
+					fields.append(k)
+		if not primaryKey:
+			raise StandardError('Primary key not found.')
+		for k in mappings.keys():
+			attrs.pop(k)
+		escaped_fields = list(map(lambda f: '`%s`' % f, fields))
+		attrs['__mappings__'] = mappings  # 保存属性和列的映射关系
+		attrs['__table__'] = tableName
+		attrs['__primary_key__'] = primaryKey  # 主键属性名
+		attrs['__fields__'] = fields  # 除主键外的属性名
+		attrs['__select__'] = 'select `%s`, %s from `%s`' % (primaryKey, ', '.join(escaped_fields), tableName)
+		attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
+		attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
+		attrs['__delete__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
+		return type.__new__(cls, name, bases, attrs)
+
+class Model(dict, metaclass=ModelMetaclass):
+
+	def __init__(self, **kw):
+		
 
