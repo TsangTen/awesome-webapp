@@ -38,6 +38,25 @@ def init_jinja2(app, **kw):
 			env.filters[name] = f
 	app['__templating__'] = env
 
+async def logger_factory(app, handler):
+	async def logger(request):
+		logging.info('Request: %s %s' % (request.method, request.path))
+		# await asyncio.sleep(0.3)
+		return (await handler(request))
+	return logger
+
+async def data_factory(app, handler):
+	async def parse_data(request):
+		if request.method == 'POST':
+			if request.content_type.startswith('application/json'):
+				request.__data__ = await request.json()
+				logging.info('request json: %s' % str(request.__data__))
+			elif request.content_type.startswith('application/x-www-form-urlencoded'):
+				request.__data__ = await request.post()
+				logging.info('request form: %s' % str(request.__data__))
+		return (await handler(request))
+	return parse_data
+
 
 
 '''
