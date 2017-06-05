@@ -113,8 +113,10 @@ class ModelMetaclass(type):
     # 如果你希望的话，你也可以在__init__中做些事情
     # 还有一些高级的用法会涉及到改写__call__特殊方法，但是我们这里不用
 	def __new__(self, name, bases, attrs):
+		# 排除Model本身
 		if name == 'Model':
 			return type.__new__(cls, name, bases, attrs)
+		# 获得table名称
 		tableName = attrs.get('__table__', None) or name
 		logging.info('found model: %s (table: %s)' % (name, tableName))
 		mappings = dict()
@@ -140,11 +142,14 @@ class ModelMetaclass(type):
 		attrs['__table__'] = tableName
 		attrs['__primary_key__'] = primaryKey  # 主键属性名
 		attrs['__fields__'] = fields  # 除主键外的属性名
+		# 构建默认的SELECT，INSERT，UPDATE和DELETE语句
 		attrs['__select__'] = 'select `%s`, %s from `%s`' % (primaryKey, ', '.join(escaped_fields), tableName)
 		attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
 		attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
 		attrs['__delete__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
 		return type.__new__(cls, name, bases, attrs)
+# 这样，任何继承自Model的类，会自动通过ModelMetaclass扫描映射关系，并存储到自身的类属性，如__table__、__mappings__中
+# 然后，我们往Model类添加class方法，就可以让所有子类调用class方法
 
 class Model(dict, metaclass=ModelMetaclass):
 
