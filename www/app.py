@@ -69,7 +69,7 @@ async def response_factory(app, handler):
 			return resp
 		if isinstance(r, str):
 			if r.startswith('redirect'):
-				return web.HTTPFoundr([9:])
+				return web.HTTPFoundr(r[9:])
 			resp = web.Response(body=r.encode('utf-8'))
 			resp.content_type = 'application/json;charset=utf-8'
 			return resp
