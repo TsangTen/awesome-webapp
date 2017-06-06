@@ -98,15 +98,15 @@ async def response_factory(app, handler):
 def datetime_filter(t):
 	delta = int(time.time() - t)
 	if delta < 60:
-		return u'1·ÖÖÓÇ°'
+		return u'1åˆ†é’Ÿå‰'
 	if delta < 3600:
-		return u'%s·ÖÖÓÇ°' % (delta // 60)
+		return u'%såˆ†é’Ÿå‰' % (delta // 60)
 	if delta < 86400:
-		return u'%sÐ¡Ê±Ç°' % (delta // 3600)
+		return u'%så°æ—¶å‰' % (delta // 3600)
 	if delta < 604800:
-		return u'%sÌìÇ°' % (delta // 86400)
+		return u'%så¤©å‰' % (delta // 86400)
 	dt = datetime.fromtimestamp(t)
-	return u'%sÄê%sÔÂ%sÈÕ' % (dt.year, dt.month, dt.day)
+	return u'%så¹´%sæœˆ%sæ—¥' % (dt.year, dt.month, dt.day)
 
 '''
 def index(request):

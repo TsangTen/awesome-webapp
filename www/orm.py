@@ -40,8 +40,8 @@ async def select(sql, args, size=None):
 		return rs
 
 """
-SQLÓï¾äµÄÕ¼Î»·ûÊÇ?£¬¶øMySQLµÄÕ¼Î»·ûÊÇ%s£¬select()º¯ÊıÔÚÄÚ²¿×Ô¶¯Ìæ»»¡£
-×¢ÒâÒªÊ¼ÖÕ¼á³ÖÊ¹ÓÃ´ø²ÎÊıµÄSQL£¬¶ø²»ÊÇ×Ô¼ºÆ´½ÓµÄSQL×Ö·û´®£¬ÕâÑù¿ÉÒÔ·ÀÖ¹SQL×¢Èë¹¥»÷¡£
+SQLè¯­å¥çš„å ä½ç¬¦æ˜¯?ï¼Œè€ŒMySQLçš„å ä½ç¬¦æ˜¯%sï¼Œselect()å‡½æ•°åœ¨å†…éƒ¨è‡ªåŠ¨æ›¿æ¢ã€‚
+æ³¨æ„è¦å§‹ç»ˆåšæŒä½¿ç”¨å¸¦å‚æ•°çš„SQLï¼Œè€Œä¸æ˜¯è‡ªå·±æ‹¼æ¥çš„SQLå­—ç¬¦ä¸²ï¼Œè¿™æ ·å¯ä»¥é˜²æ­¢SQLæ³¨å…¥æ”»å‡»ã€‚
 """
 
 async def execute(sql, args, autocommit=True):
@@ -105,18 +105,18 @@ class TextField(Field):
 
 class ModelMetaclass(type):
 
-	# __new__ ÊÇÔÚ__init__Ö®Ç°±»µ÷ÓÃµÄÌØÊâ·½·¨
-    # __new__ÊÇÓÃÀ´´´½¨¶ÔÏó²¢·µ»ØÖ®µÄ·½·¨
-    # ¶ø__init__Ö»ÊÇÓÃÀ´½«´«ÈëµÄ²ÎÊı³õÊ¼»¯¸ø¶ÔÏó
-    # ÄãºÜÉÙÓÃµ½__new__£¬³ı·ÇÄãÏ£ÍûÄÜ¹»¿ØÖÆ¶ÔÏóµÄ´´½¨
-    # ÕâÀï£¬´´½¨µÄ¶ÔÏóÊÇÀà£¬ÎÒÃÇÏ£ÍûÄÜ¹»×Ô¶¨ÒåËü£¬ËùÒÔÎÒÃÇÕâÀï¸ÄĞ´__new__
-    # Èç¹ûÄãÏ£ÍûµÄ»°£¬ÄãÒ²¿ÉÒÔÔÚ__init__ÖĞ×öĞ©ÊÂÇé
-    # »¹ÓĞÒ»Ğ©¸ß¼¶µÄÓÃ·¨»áÉæ¼°µ½¸ÄĞ´__call__ÌØÊâ·½·¨£¬µ«ÊÇÎÒÃÇÕâÀï²»ÓÃ
-	def __new__(self, name, bases, attrs):
-		# ÅÅ³ıModel±¾Éí
+	# __new__ æ˜¯åœ¨__init__ä¹‹å‰è¢«è°ƒç”¨çš„ç‰¹æ®Šæ–¹æ³•
+    # __new__æ˜¯ç”¨æ¥åˆ›å»ºå¯¹è±¡å¹¶è¿”å›ä¹‹çš„æ–¹æ³•
+    # è€Œ__init__åªæ˜¯ç”¨æ¥å°†ä¼ å…¥çš„å‚æ•°åˆå§‹åŒ–ç»™å¯¹è±¡
+    # ä½ å¾ˆå°‘ç”¨åˆ°__new__ï¼Œé™¤éä½ å¸Œæœ›èƒ½å¤Ÿæ§åˆ¶å¯¹è±¡çš„åˆ›å»º
+    # è¿™é‡Œï¼Œåˆ›å»ºçš„å¯¹è±¡æ˜¯ç±»ï¼Œæˆ‘ä»¬å¸Œæœ›èƒ½å¤Ÿè‡ªå®šä¹‰å®ƒï¼Œæ‰€ä»¥æˆ‘ä»¬è¿™é‡Œæ”¹å†™__new__
+    # å¦‚æœä½ å¸Œæœ›çš„è¯ï¼Œä½ ä¹Ÿå¯ä»¥åœ¨__init__ä¸­åšäº›äº‹æƒ…
+    # è¿˜æœ‰ä¸€äº›é«˜çº§çš„ç”¨æ³•ä¼šæ¶‰åŠåˆ°æ”¹å†™__call__ç‰¹æ®Šæ–¹æ³•ï¼Œä½†æ˜¯æˆ‘ä»¬è¿™é‡Œä¸ç”¨
+	def __new__(cls, name, bases, attrs):
+		# æ’é™¤Modelæœ¬èº«
 		if name == 'Model':
 			return type.__new__(cls, name, bases, attrs)
-		# »ñµÃtableÃû³Æ
+		# è·å¾—tableåç§°
 		tableName = attrs.get('__table__', None) or name
 		logging.info('found model: %s (table: %s)' % (name, tableName))
 		mappings = dict()
@@ -127,7 +127,7 @@ class ModelMetaclass(type):
 				logging.info('  found mapping: %s ==> %s' % (k, v))
 				mappings[k] = v
 				if v.primary_key:
-					# ÕÒµ½Ö÷¼ü
+					# æ‰¾åˆ°ä¸»é”®
 					if primaryKey:
 						raise StandardError('Duplicate primary key for field: %s' % k)
 					primaryKey = k
@@ -138,18 +138,18 @@ class ModelMetaclass(type):
 		for k in mappings.keys():
 			attrs.pop(k)
 		escaped_fields = list(map(lambda f: '`%s`' % f, fields))
-		attrs['__mappings__'] = mappings  # ±£´æÊôĞÔºÍÁĞµÄÓ³Éä¹ØÏµ
+		attrs['__mappings__'] = mappings  # ä¿å­˜å±æ€§å’Œåˆ—çš„æ˜ å°„å…³ç³»
 		attrs['__table__'] = tableName
-		attrs['__primary_key__'] = primaryKey  # Ö÷¼üÊôĞÔÃû
-		attrs['__fields__'] = fields  # ³ıÖ÷¼üÍâµÄÊôĞÔÃû
-		# ¹¹½¨Ä¬ÈÏµÄSELECT£¬INSERT£¬UPDATEºÍDELETEÓï¾ä
+		attrs['__primary_key__'] = primaryKey  # ä¸»é”®å±æ€§å
+		attrs['__fields__'] = fields  # é™¤ä¸»é”®å¤–çš„å±æ€§å
+		# æ„å»ºé»˜è®¤çš„SELECTï¼ŒINSERTï¼ŒUPDATEå’ŒDELETEè¯­å¥
 		attrs['__select__'] = 'select `%s`, %s from `%s`' % (primaryKey, ', '.join(escaped_fields), tableName)
 		attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
 		attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
 		attrs['__delete__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
 		return type.__new__(cls, name, bases, attrs)
-# ÕâÑù£¬ÈÎºÎ¼Ì³Ğ×ÔModelµÄÀà£¬»á×Ô¶¯Í¨¹ıModelMetaclassÉ¨ÃèÓ³Éä¹ØÏµ£¬²¢´æ´¢µ½×ÔÉíµÄÀàÊôĞÔ£¬Èç__table__¡¢__mappings__ÖĞ
-# È»ºó£¬ÎÒÃÇÍùModelÀàÌí¼Óclass·½·¨£¬¾Í¿ÉÒÔÈÃËùÓĞ×ÓÀàµ÷ÓÃclass·½·¨
+# è¿™æ ·ï¼Œä»»ä½•ç»§æ‰¿è‡ªModelçš„ç±»ï¼Œä¼šè‡ªåŠ¨é€šè¿‡ModelMetaclassæ‰«ææ˜ å°„å…³ç³»ï¼Œå¹¶å­˜å‚¨åˆ°è‡ªèº«çš„ç±»å±æ€§ï¼Œå¦‚__table__ã€__mappings__ä¸­
+# ç„¶åï¼Œæˆ‘ä»¬å¾€Modelç±»æ·»åŠ classæ–¹æ³•ï¼Œå°±å¯ä»¥è®©æ‰€æœ‰å­ç±»è°ƒç”¨classæ–¹æ³•
 
 class Model(dict, metaclass=ModelMetaclass):
 
@@ -174,7 +174,7 @@ class Model(dict, metaclass=ModelMetaclass):
 			field = self.__mappings__[key]
 			if field.default is not None:
 				value = field.default() if callable(field.default) else field.default
-				logging.debug('using default value for %s: %s' % (key, str(value))
+				logging.debug('using default value for %s: %s' % (key, str(value)))
 				setattr(self, key, value)
 		return value
 	
@@ -230,7 +230,7 @@ class Model(dict, metaclass=ModelMetaclass):
 		args.append(self.getValueOrDefault(self.__primary_key__))
 		rows = await execute(self.__insert__, args)
 		if rows != 1:
-		logging.warn('failed to insert record: affected rows: %s' % rows)
+			logging.warn('failed to insert record: affected rows: %s' % rows)
 	
 	async def update(self):
 		args = list(map(self.getValue, self.__fields__))
