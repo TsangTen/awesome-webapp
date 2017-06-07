@@ -20,7 +20,7 @@ def get(path):
 		@functools.wraps(func)
 		def wrapper(*args, **kw):
 			return func(*args, **kw)
-		wrapper.__method__ = ' GET'
+		wrapper.__method__ = 'GET'
 		wrapper.__route__ = path
 		return wrapper
 	return decorator
@@ -33,7 +33,7 @@ def post(path):
 		@functools.wraps(func)
 		def wrapper(*args, **kw):
 			return func(*args, **kw)
-		wrapper.__method__ = ' POST'
+		wrapper.__method__ = 'POST'
 		wrapper.__route__ = path
 		return wrapper
 	return decorator
@@ -174,7 +174,7 @@ def add_route(app, fn):
 # 自动把handler模块的所有符合条件的函数注册了
 def add_routes(app, module_name):
 	n = module_name.rfind('.')
-	if n = (-1):
+	if n == (-1):
 		mod = __import__(module_name, globals(), locals())
 	else:
 		name = module_name[n+1:]

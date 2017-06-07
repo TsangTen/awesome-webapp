@@ -17,7 +17,7 @@ async def create_pool(loop, **kw):
 		host=kw.get('host', 'localhost'),
 		port=kw.get('port', 3306),
 		user=kw['user'],
-		passwowrd=kw['password'],
+		password=kw['password'],
 		db=kw['db'],
 		charset=kw.get('charset', 'utf8'),
 		autocommit=kw.get('autocommit', True),
@@ -76,7 +76,7 @@ class Field(object):
 		self.default = default
 
 	def __str__(self):
-		return '<%s, %s:%s>' %s (self.__class__.__name__, self.column_type, self.name)
+		return '<%s, %s:%s>' % (self.__class__.__name__, self.column_type, self.name)
 
 class StringField(Field):
 
