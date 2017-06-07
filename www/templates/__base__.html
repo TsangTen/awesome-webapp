@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
 	{% block meta %}<!-- block meta -->{% endblock %}
+	<!-- 用于子页面定义一些meta，例如rss feed -->
 	<title>{% block title %} ? {% endblock %} - Awesome Python Webapp</title>
+	<!-- 覆盖页面的标题 -->
 	<link rel="stylesheet" type="text/css" href="/static/css/uikit.min.css">
 	<link rel="stylesheet" type="text/css" href="/static/css/uikit.gradient.min.css">
 	<link rel="stylesheet" type="text/css" href="/static/css/awesome.css">
@@ -15,6 +16,7 @@
 	<script type="text/javascript" src="/static/js/vue.min.js"></script>
 	<script type="text/javascript" src="/static/js/awesome.js"></script>
 	{% block beforehead %}<!-- before head -->{% endblock %}
+	<!-- 子页面可以在<head>标签关闭前插入JavaScript代码 -->
 </head>
 <body>
 	<nav class="uk-navbar uk-navbar-attached uk-margin-bottom">
@@ -47,7 +49,7 @@
 
 	<div class="uk-container uk-container-center">
 		<div class="uk-grid">
-			<!-- content -->
+			<!-- content，子页面的content布局和内容 -->
 			{% block content %}
 			{% endblock %}
 			<!-- // content -->
