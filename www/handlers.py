@@ -39,7 +39,7 @@ async def index(request):
 
 @get('/api/users')
 async def api_get_users():
-	users = yield from User.findAll(orderBy='created_at desc')
+	users = await User.findAll(orderBy='created_at desc')
 	for u in users:
 		u.password = '******'
 	return dict(users=users)
