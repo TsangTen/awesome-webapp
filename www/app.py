@@ -3,7 +3,7 @@
 
 __author__ = 'Ten Tsang'
 
-import logging
+import logging; logging.basicConfig(level=logging.INFO)
 import asyncio
 import os
 import json
@@ -17,7 +17,7 @@ from coroweb import add_routes, add_static
 from handlers import cookie2user, COOKIE_NAME
 from config import configs
 
-logging.basicConfig(level=logging.INFO)
+
 
 def init_jinja2(app, **kw):
 	logging.info('init jinja2...')
