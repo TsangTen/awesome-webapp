@@ -17,7 +17,7 @@ from coroweb import add_routes, add_static
 from handlers import cookie2user, COOKIE_NAME
 from config import configs
 
-
+# dd
 
 def init_jinja2(app, **kw):
 	logging.info('init jinja2...')
