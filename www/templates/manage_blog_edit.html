@@ -4,15 +4,16 @@
 
 {% block beforehead %}
 
+<!-- 初始化Vue时，指定三个参数 -->
 <script type="text/javascript">
 	var
 		ID = '{{ id }}',
 		action = '{{ action }}';
 	function initVM(blog) {
 		var vm = new Vue({
-			el: '#vm',
-			data: blog,
-			method: {
+			el: '#vm', //el根据选择器查找绑定的View，这里是#vm，就是id为vm的DOM，对应的是一个<div>标签
+			data: blog, //Javascript对象表示的Model
+			method: { //View可以触发的JavaScript函数，submit就是提交表单时触发的函数
 				submit: function(event){
 					event.preventDefault();
 					var $form = $('#vm').find('form');
@@ -68,7 +69,9 @@
 	<span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i>正在加载...</span>
 </div>
 <div id="vm" class="uk-width-2-3">
+<!-- 在<form>标签中，用几个简单的v-model，就可以让Vue把Model和View关联起来 -->
 	<form v-on="submit: submit" class="uk-form uk-form-stacked">
+	<!-- Form表单通过<form v-on="submit: submit">把提交表单的时间关联到submit方法 -->
 		<div class="uk-alert uk-alert-danger uk-hidden"></div>
 		<div class="uk-form-row">
 			<label class="uk-form-label">标题：</label>
@@ -94,6 +97,7 @@
 		</div>
 	</form>
 </div>
+<!-- 需要特别注意的是，在MVVM中，Model和View是双向绑定的。如果我们在Form中修改了文本框的值，可以在Model中立刻拿到新的值。试试在表单中输入文本，然后在Chrome浏览器中打开JavaScript控制台，可以通过vm.name访问单个属性，或者通过vm.$data访问整个Model。如果我们在JavaScript逻辑中修改了Model，这个修改会立刻反映到View上。试试在JavaScript控制台输入vm.name = 'MVVM简介'，可以看到文本框的内容自动被同步了。双向绑定是MVVM框架最大的作用。借助于MVVM，我们把复杂的显示逻辑交给框架完成。由于后端编写了独立的REST API，所以，前端用AJAX提交表单非常容易，前后端分离得非常彻底。 -->
 
 {% endblock %}
 
