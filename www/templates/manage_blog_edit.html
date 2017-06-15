@@ -13,7 +13,7 @@
 		var vm = new Vue({
 			el: '#vm', //el根据选择器查找绑定的View，这里是#vm，就是id为vm的DOM，对应的是一个<div>标签
 			data: blog, //Javascript对象表示的Model
-			method: { //View可以触发的JavaScript函数，submit就是提交表单时触发的函数
+			methods: { //View可以触发的JavaScript函数，submit就是提交表单时触发的函数
 				submit: function(event){
 					event.preventDefault();
 					var $form = $('#vm').find('form');
