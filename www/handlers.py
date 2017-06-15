@@ -147,7 +147,7 @@ _RE_SHA1 = re.compile(r'^[0-9a-f]{40}$')
 async def api_register_user(*, email, name, passwd):
 	if not name or not name.strip():
 		raise APIValueError('name', 'Invalid name.')
-	if not email or _RE_EMAIL.match(email):
+	if not email or not _RE_EMAIL.match(email):
 		raise APIValueError('email', 'Invalid email.')
 	if not passwd or not _RE_SHA1.match(passwd):
 		raise APIValueError('passwd', 'Invalid password.')
