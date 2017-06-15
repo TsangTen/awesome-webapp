@@ -156,7 +156,7 @@ class Model(dict, metaclass=ModelMetaclass):
 	def __init__(self, **kw):
 		super(Model, self).__init__(**kw)
 	
-	def __getattr_(self, key):
+	def __getattr__(self, key):
 		try:
 			return self[key]
 		except KeyError:
@@ -169,7 +169,11 @@ class Model(dict, metaclass=ModelMetaclass):
 		return getattr(self, key, None)
 	
 	def getValueOrDefault(self, key):
+		# logging.info(self)
+		# logging.info(key)
 		value = getattr(self, key, None)
+		# logging.info(getattr(self, 'email', None))
+		# logging.info(key, value)
 		if value is None:
 			field = self.__mappings__[key]
 			if field.default is not None:
@@ -226,7 +230,10 @@ class Model(dict, metaclass=ModelMetaclass):
 		return cls(**rs[0])
 	
 	async def save(self):
+		# logging.info(self)
+		# logging.info(self.__fields__)
 		args = list(map(self.getValueOrDefault, self.__fields__))
+		# logging.info(args)
 		args.append(self.getValueOrDefault(self.__primary_key__))
 		rows = await execute(self.__insert__, args)
 		if rows != 1:
