@@ -101,7 +101,7 @@ async def index(request):
 		'blogs': blogs
 	}
 
-get('/blog/{id}')
+@get('/blog/{id}')
 async def get_blog(id):
 	blog = await Blog.find(id)
 	comments = await Comment.findAll('blog_id=?', [id], orderBy='created_at desc')
