@@ -204,7 +204,7 @@ class Model(dict, metaclass=ModelMetaclass):
 				args.append(limit)
 			elif isinstance(limit, tuple) and len(limit) == 2:
 				sql.append('?, ?')
-				args.append(limit)
+				args.extend(limit)
 			else:
 				raise ValueError('Invalid limit value: %s' % str(limit))
 		logging.info('Args in findAll(orm): %s' % args)
