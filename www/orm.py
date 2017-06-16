@@ -206,6 +206,7 @@ class Model(dict, metaclass=ModelMetaclass):
 				args.append(limit)
 			else:
 				raise ValueError('Invalid limit value: %s' % str(limit))
+		logging.info('Args in findAll(orm): %s' % args)
 		rs = await select(' '.join(sql), args)
 		return [cls(**r) for r in rs]
 	
