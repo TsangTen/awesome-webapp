@@ -91,11 +91,12 @@ async def cookie2user(cookie_str):
 @get('/')
 async def index(request):
 	summary = 'Lorem ipsum dolor amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut lobore et dolore magna aliqua.'
-	blogs = [
-		Blog(id='1', name='Test Blog', summary=summary, created_at=time.time()-120),
-		Blog(id='2', name='Something New', summary=summary, created_at=time.time()-3600),
-		Blog(id='3', name='Learn Swift', summary=summary, created_at=time.time()-7200)
-	]
+	# blogs = [
+	# 	Blog(id='1', name='Test Blog', summary=summary, created_at=time.time()-120),
+	# 	Blog(id='2', name='Something New', summary=summary, created_at=time.time()-3600),
+	# 	Blog(id='3', name='Learn Swift', summary=summary, created_at=time.time()-7200)
+	# ]
+	blogs = await Blog.findAll()
 	return {
 		'__template__': 'blogs.html',
 		'blogs': blogs
