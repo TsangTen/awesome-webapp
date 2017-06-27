@@ -70,18 +70,22 @@ def has_var_kw_arg(fn):
 			return True
 
 def has_request_arg(fn):
-	sig = inspect.signature(fn)
-	params = sig.parameters
+'''
+	判断是否存在请求参数
+	fn：一个用@get(path)或@post(path)装饰的处理函数，也就是网络请求
+'''
+	sig = inspect.signature(fn)  # inspect.signature获取fn的所有参数
+	params = sig.parameters  # parameters以映射形式返回，即字典
 	found = False
-	for name, param in params.items():
+	for name, param in params.items():  # 遍历参数对
 		if name == 'request':
 			found = True
 			continue
 		if found and (
-			param.kind != inspect.Parameter.VAR_POSITIONAL 
-			and param.kind != inspect.Parameter.KEYWORD_ONLY 
-			and param.kind != inspect.Parameter.VAR_KEYWORD
-		):
+			param.kind != inspect.Parameter.VAR_POSITIONAL  # 参数类型不是可变长列表
+			and param.kind != inspect.Parameter.KEYWORD_ONLY  # 不是只能通过参数名的方式赋值的参数
+			and param.kind != inspect.Parameter.VAR_KEYWORD  # 参数不是可变长字典
+		):  # 如果在request后面的参数不是上面三种
 			raise ValueError('request parameter must be named parameter in function: %s%s' % (fn.__name__, str(sig)))
 	return found
 
@@ -91,6 +95,11 @@ class RequestHandler(object):
 	网络请求处理器（类）
 '''
 	def __init__(self, app, fn):
+	'''
+		param：
+			app：aiohttp模块中web.Application生成的对象
+			fn：一个用@get(path)或@post(path)装饰的处理函数，这里是handlers.py中的函数，也就是网络请求
+	'''
 		self._app = app
 		self._func = fn
 		self._has_request_arg = has_request_arg(fn)
