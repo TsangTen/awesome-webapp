@@ -18,10 +18,11 @@ def get(path):
 	'''
 	def decorator(func):
 		@functools.wraps(func)
+		# @functools.wraps(func)使得被装饰函数的‘__name__’属性，对应为该函数，而不是‘__wrapper__’
 		def wrapper(*args, **kw):
 			return func(*args, **kw)
-		wrapper.__method__ = 'GET'
-		wrapper.__route__ = path
+		wrapper.__method__ = 'GET'  # 添加了属性‘__method__’
+		wrapper.__route__ = path  # 添加了属性‘__route__’
 		return wrapper
 	return decorator
 
