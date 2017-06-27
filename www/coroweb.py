@@ -14,7 +14,7 @@ from apis import APIError
 
 def get(path):
 	'''
-	Define decorator @get('/path')
+		Define decorator @get('/path')
 	'''
 	def decorator(func):
 		@functools.wraps(func)
@@ -28,7 +28,7 @@ def get(path):
 
 def post(path):
 	'''
-	Define decorator @post('/path')
+		Define decorator @post('/path')
 	'''
 	def decorator(func):
 		@functools.wraps(func)
@@ -40,10 +40,12 @@ def post(path):
 	return decorator
 
 def get_required_kw_args(fn):
+	# 获取请求的参数
 	args = []
-	params = inspect.signature(fn).parameters
+	params = inspect.signature(fn).parameters  # inspect.signature获取fn的所有参数，parameters以映射形式返回
 	for name, param in params.items():
 		if param.kind == inspect.Parameter.KEYWORD_ONLY and param.default == inspect.Parameter.empty:
+			# KEYWORD_ONLY指只能通过参数名赋值，empty指参数没有默认值
 			args.append(name)
 	return tuple(args)
 
@@ -85,7 +87,9 @@ def has_request_arg(fn):
 
 
 class RequestHandler(object):
-
+'''
+	网络请求处理器（类）
+'''
 	def __init__(self, app, fn):
 		self._app = app
 		self._func = fn
@@ -153,39 +157,56 @@ class RequestHandler(object):
 			return dict(error=e.error, data=e.data, message=e.message)
 
 def add_static(app):
+	'''
+		用了配置css，js，字体，图片等文件的路径
+		param：
+			app：aiohttp模块中web.Application生成的对象
+	'''
 	path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
-	app.router.add_static('/static/', path)
+	# os.path.join()用于拼接路径
+	# os.path.dirname()用于获取文件所在文件夹路径
+	# os.path.abspath()用于获取文件所在绝对路径
+	# __file__为本文件，这里即coroweb.py
+	app.router.add_static('/static/', path)  # 这是aiohttp模块中的add_static
 	logging.info('add static %s => %s' % ('/static/', path))
 
 def add_route(app, fn):
 	'''
-	用来注册一个URL处理函数
+		用来注册一个URL处理函数
+		param：
+			app：aiohttp模块中web.Application生成的对象
+			fn：一个用@get(path)或@post(path)装饰的处理函数，这里是handlers.py中的函数
 	'''
-	method = getattr(fn, '__method__', None)
-	path = getattr(fn, '__route__', None)
+	method = getattr(fn, '__method__', None)  # 获取方法，‘GET’或‘POST’
+	# 如果fn存在属性'__method__'，则返回属性的值，否则返回None
+	path = getattr(fn, '__route__', None)  # 获取路径，即页面路径
 	if path is None or method is None:
 		raise ValueError('@get or @post not defined in %s.' % str(fn))
 	if not asyncio.iscoroutinefunction(fn) and not inspect.isgeneratorfunction(fn):
+	# 如果fn不是携程函数（用async def定义的，或用@asyncio.coroutine装饰的函数）
+	# The function that defines a coroutine (a function definition using async def 
+	# or decorated with @asyncio.coroutine)
+	# 且不是生成器函数，则把它变为携程函数
 		fn = asyncio.coroutine(fn)
 	logging.info('add route %s %s => %s(%s)' % (method, path, fn.__name__, ', '.join(inspect.signature(fn).parameters.keys())))
-	app.router.add_route(method, path, RequestHandler(app, fn))
+	app.router.add_route(method, path, RequestHandler(app, fn))  # 这是aiohttp模块中的add_route
 
 
 # 变成自动扫描：
 # 自动把handler模块的所有符合条件的函数注册了
 def add_routes(app, module_name):
-	n = module_name.rfind('.')
-	if n == (-1):
-		mod = __import__(module_name, globals(), locals())
+	n = module_name.rfind('.')  # 查找右边第一个‘.’的位置
+	if n == (-1):  # 即没找到‘.’，说明不存在父模块
+		mod = __import__(module_name, globals(), locals())  # 直接导入模块
 	else:
-		name = module_name[n+1:]
-		mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)
-	for attr in dir(mod):
-		if attr.startswith('_'):
+		name = module_name[n+1:]  # 模块名
+		mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)  # 从父模块中导入相应模块
+	for attr in dir(mod):  # 遍历模块中所有函数
+		if attr.startswith('_'):  # 忽略以‘_’开头的
 			continue
-		fn = getattr(mod, attr)
-		if callable(fn):
-			method = getattr(fn, '__method__', None)
-			path = getattr(fn, '__route__', None)
-			if method and path:
+		fn = getattr(mod, attr)  # 获取模块中相应属性
+		if callable(fn):  # 如果是可调用的（函数）
+			method = getattr(fn, '__method__', None)  # 获取方法
+			path = getattr(fn, '__route__', None)  # 获取路径
+			if method and path:  # 如果存在方法和路径，可以注册一个URL处理函数
 				add_route(app, fn)
