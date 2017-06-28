@@ -18,11 +18,11 @@ def get(path):
 	'''
 	def decorator(func):
 		@functools.wraps(func)
-		# @functools.wraps(func)使得被装饰函数的‘__name__’属性，对应为该函数，而不是‘__wrapper__’
+		# @functools.wraps(func)使得被装饰函数的‘__name__’属性，对应为该函数，而不是‘wrapper’
 		def wrapper(*args, **kw):
 			return func(*args, **kw)
-		wrapper.__method__ = 'GET'  # 添加了属性‘__method__’
-		wrapper.__route__ = path  # 添加了属性‘__route__’
+		wrapper.__method__ = 'GET'  # 添加属性‘__method__’
+		wrapper.__route__ = path  # 添加属性‘__route__’
 		return wrapper
 	return decorator
 
@@ -45,28 +45,32 @@ def get_required_kw_args(fn):
 	params = inspect.signature(fn).parameters  # inspect.signature获取fn的所有参数，parameters以映射形式返回
 	for name, param in params.items():
 		if param.kind == inspect.Parameter.KEYWORD_ONLY and param.default == inspect.Parameter.empty:
-			# KEYWORD_ONLY指只能通过参数名赋值，empty指参数没有默认值
+			# KEYWORD_ONLY指只能通过参数名赋值，empty指参数没有默认值，或默认值为空
+			# 如果为默认参数，且默认值为空，则添加到参数表
 			args.append(name)
 	return tuple(args)
 
 def get_named_kw_args(fn):
+	# 获取有参数名的参数，即含默认值参数
 	args = []
 	params = inspect.signature(fn).parameters
 	for name, param in params.items():
-		if param.kind == inspect.Parameter.KEYWORD_ONLY:
+		if param.kind == inspect.Parameter.KEYWORD_ONLY:  # KEYWORD_ONLY指只能通过参数名赋值
 			args.append(name)
 	return tuple(args)
 
 def has_named_kw_args(fn):
+	# 判断是否有含默认值参数
 	params = inspect.signature(fn).parameters
 	for name, param in params.items():
 		if param.kind == inspect.Parameter.KEYWORD_ONLY:
 			return True
 
 def has_var_kw_arg(fn):
+	# 判断是否有任意参数
 	params = inspect.signature(fn).parameters
 	for name, param in params.items():
-		if param.kind == inspect.Parameter.VAR_KEYWORD:
+		if param.kind == inspect.Parameter.VAR_KEYWORD:  # VAR_KEYWORD指参数是可变长字典
 			return True
 
 def has_request_arg(fn):
@@ -113,14 +117,19 @@ class RequestHandler(object):
 	# 	kw = ..
 	# 	r = yield from self._func(**kw)
 	# 	return r
-	async def __call__(self, request):
+	async def __call__(self, request):  # 使RequestHandler类变为可调用对象
+	# 即：
+	#	rh = RequestHandler(app, fn)
+	#	rh(request)
+	# 相当于直接调用了此类的__call__方法
 		kw = None
 		if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
+		# 如果参数不为空
 			if request.method == 'POST':
-				if not request.content_type:
+				if not request.content_type:  # 如果没有内容类型
 					return web.HTTPBadRequest('Missing Content Type.')
-				ct = request.content_type.lower()
-				if ct.startswith('application/json'):
+				ct = request.content_type.lower()  # 转为小写字符
+				if ct.startswith('application/json'):  # 判断内容类型
 					params = await request.json()
 					if not isinstance(params, dict):
 						return web.HTTPBadRequest('JSON body must be object.')
@@ -199,6 +208,9 @@ def add_route(app, fn):
 		fn = asyncio.coroutine(fn)
 	logging.info('add route %s %s => %s(%s)' % (method, path, fn.__name__, ', '.join(inspect.signature(fn).parameters.keys())))
 	app.router.add_route(method, path, RequestHandler(app, fn))  # 这是aiohttp模块中的add_route
+	# 这里可以简单理解成router.add_route中的第三个参数handler
+	# 也就是说RequestHandler(app, fn)会生成对象handler，再以handler(request)的形式调用
+	# 所以会调用到__call__
 
 
 # 变成自动扫描：
