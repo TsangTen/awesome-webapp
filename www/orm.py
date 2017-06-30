@@ -41,8 +41,8 @@ async def select(sql, args, size=None):
 		return rs
 
 """
-SQL语句的占位符是?，而MySQL的占位符是%s，select()函数在内部自动替换。
-注意要始终坚持使用带参数的SQL，而不是自己拼接的SQL字符串，这样可以防止SQL注入攻击。
+	SQL语句的占位符是“?”，而MySQL的占位符是“%s”，select()函数在内部自动替换。
+	注意要始终坚持使用带参数的SQL，而不是自己拼接的SQL字符串，这样可以防止SQL注入攻击。
 """
 
 async def execute(sql, args, autocommit=True):
